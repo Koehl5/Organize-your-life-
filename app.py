@@ -4,8 +4,8 @@ import json
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-# Security: Use environment variable on server, fall back to dev key locally
-app.secret_key = os.environ.get('SECRET_KEY', 'dev_key_only_for_local_testing')
+# Security: Use your custom environment variable
+app.secret_key = os.environ.get('Koehl-Allen', 'dev_key_only_for_local_testing')
 
 # Ensure data directory exists
 DATA_FILE = os.path.join(os.path.dirname(__file__), 'data', 'complaints.json')
