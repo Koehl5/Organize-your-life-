@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login | Organizeyourlife{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2>Admin Login</h2>
+    <form action="/login" method="POST" class="login-form">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert error">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" required>
+        </div>
+
+        <button type="submit" class="save-btn">Login</button>
+    </form>
+</div>
+{% endblock %}

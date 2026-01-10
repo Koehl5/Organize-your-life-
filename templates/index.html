@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-section">
+            <h3>Upcoming</h3>
+            <div id="upcomingEvents">
+                <p class="empty-msg">No events for today or tomorrow.</p>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>To-Do List</h3>
+            <div class="todo-input-group">
+                <input type="text" id="todoInput" placeholder="Add a task...">
+                <button id="addTodoBtn"><i class="ph ph-plus"></i></button>
+            </div>
+            <div id="todoList">
+                <!-- Todos will be here -->
+            </div>
+        </div>
+    </aside>
+
+    <div class="calendar-container">
+        <header>
+            <h2 id="monthDisplay"></h2>
+            <div class="nav-btns">
+                <button id="prevBtn"><i class="ph ph-caret-left"></i></button>
+                <button id="nextBtn"><i class="ph ph-caret-right"></i></button>
+            </div>
+        </header>
+
+        <div class="weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+
+        <div id="calendarGrid" class="calendar-grid"></div>
+    </div>
+</div>
+
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <h3>Add Event</h3>
+        <input type="text" id="eventInput" placeholder="Event Title...">
+        <div class="modal-actions">
+            <button id="closeModal">Cancel</button>
+            <button id="saveEvent">Save</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

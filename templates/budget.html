@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Budget Tracker | Organizeyourlife{% endblock %}
+
+{% block content %}
+<div class="budget-container">
+    <header class="page-header">
+        <h2>Budget Tracker</h2>
+    </header>
+
+    <div class="budget-dashboard">
+        <div class="card balance-card">
+            <h3>Total Balance</h3>
+            <span id="totalBalance">$0.00</span>
+        </div>
+        <div class="card income-card">
+            <h3>Income</h3>
+            <span id="totalIncome">$0.00</span>
+        </div>
+        <div class="card expense-card">
+            <h3>Expenses</h3>
+            <span id="totalExpense">$0.00</span>
+        </div>
+    </div>
+
+    <div class="budget-content">
+        <aside class="add-transaction-panel">
+            <h3>Add Transaction</h3>
+            <form id="budgetForm">
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="transDesc" placeholder="Rent, Salary, etc." required>
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="transAmount" placeholder="0.00" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="transType">
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
+                    </select>
+                </div>
+                <button type="submit" class="save-btn">Add Transaction</button>
+            </form>
+        </aside>
+
+        <section class="transactions-list-section">
+            <h3>History</h3>
+            <div id="transactionsList">
+                <p class="empty-msg">No transactions yet.</p>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Alarms | Organizeyourlife{% endblock %}
+
+{% block content %}
+<div class="alarms-container">
+    <div class="clock-display">
+        <h1 id="digitalClock">00:00:00</h1>
+        <p id="currentDate">Loading Date...</p>
+    </div>
+
+    <div class="alarms-content">
+        <div class="active-alarms">
+            <h3>Active Alarms</h3>
+            <div id="alarmsList">
+                <p class="empty-msg">No alarms set.</p>
+            </div>
+        </div>
+
+        <div class="add-alarm-panel">
+            <h3>Set Alarm</h3>
+            <div class="form-group">
+                <label>Time</label>
+                <input type="time" id="alarmTimeInput" required>
+            </div>
+            <div class="form-group">
+                <label>Label</label>
+                <input type="text" id="alarmLabelInput" placeholder="Wake Up...">
+            </div>
+            <div class="form-group">
+                <label>Sound</label>
+                <select id="alarmSoundInput">
+                    <option value="beep">Digital Beep</option>
+                    <option value="chime">Soft Chime</option>
+                    <option value="alert">Alert Siren</option>
+                </select>
+            </div>
+            <button id="addAlarmBtn" class="save-btn">Set Alarm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Audio Elements -->
+<audio id="sound-beep" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+<audio id="sound-chime" src="https://assets.mixkit.co/active_storage/sfx/221/221-preview.mp3" preload="auto"></audio>
+<audio id="sound-alert" src="https://assets.mixkit.co/active_storage/sfx/999/999-preview.mp3" preload="auto"></audio>
+
+<div id="alarmModal" class="modal">
+    <div class="modal-content alarm-trigger-content">
+        <i class="ph ph-alarm" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+        <h3 id="triggerLabel">Alarm!</h3>
+        <p id="triggerTime">00:00</p>
+        <button id="stopAlarmBtn" class="save-btn" style="background: var(--danger);">Stop</button>
+    </div>
+</div>
+{% endblock %}

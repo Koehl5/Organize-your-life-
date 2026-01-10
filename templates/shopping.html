@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping List | Organizeyourlife{% endblock %}
+
+{% block content %}
+<div class="shopping-container">
+    <header class="page-header">
+        <h2>Shopping List</h2>
+        <div class="shopping-input-wrapper">
+            <input type="text" id="shoppingInput" placeholder="Add item (e.g., Milk, Eggs)...">
+            <input type="number" id="shoppingQty" placeholder="1" min="1" value="1">
+            <button id="addShoppingBtn"><i class="ph ph-plus"></i></button>
+        </div>
+    </header>
+
+    <div class="shopping-list-content">
+        <div id="shoppingList">
+            <p class="empty-msg">Your list is empty.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

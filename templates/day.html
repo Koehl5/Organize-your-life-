@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Day View | Clean Calendar{% endblock %}
+
+{% block content %}
+<div class="day-view-container">
+    <header>
+        <div class="header-left">
+            <a href="/" class="back-btn"><i class="ph ph-arrow-left"></i> Back</a>
+            <h2 id="dayTitle">Loading...</h2>
+            <button id="starDayBtn" class="star-btn" title="Star this day"><i class="ph ph-star"></i></button>
+        </div>
+    </header>
+
+    <div class="day-content">
+        <!-- Left Side: Event List -->
+        <div class="events-section">
+            <h3>Schedule</h3>
+            <div id="dayEventsList" class="events-list">
+                <!-- Events will be populated here -->
+                <p class="no-events-msg">No events for this day.</p>
+            </div>
+        </div>
+
+        <!-- Right Side: Add Event Form -->
+        <div class="add-event-section">
+            <h3>Add Event</h3>
+            <form id="addEventForm">
+                <div class="form-group">
+                    <label for="eventTitle">Title</label>
+                    <input type="text" id="eventTitle" placeholder="Meeting, Lunch, etc." required>
+                </div>
+                <div class="form-group">
+                    <label for="eventTime">Time</label>
+                    <input type="time" id="eventTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDesc">Description (Optional)</label>
+                    <textarea id="eventDesc" rows="3" placeholder="Details..."></textarea>
+                </div>
+                <button type="submit" class="save-btn">Add Event</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

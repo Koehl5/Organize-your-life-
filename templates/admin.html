@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | Organizeyourlife{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <header class="admin-header">
+        <h2>Complaint Forum</h2>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </header>
+
+    <div class="admin-stats">
+        <div class="stat-card active-users">
+            <h3>Active Users (5m)</h3>
+            <span class="stat-value pulse">{{ active_users }}</span>
+        </div>
+        <div class="stat-card total-complaints">
+            <h3>Total Complaints</h3>
+            <span class="stat-value">{{ complaints|length }}</span>
+        </div>
+    </div>
+
+    <div class="complaints-list">
+        {% if complaints|length == 0 %}
+        <p class="empty-msg">No complaints submitted yet.</p>
+        {% else %}
+        {% for c in complaints %}
+        <div class="complaint-card">
+            <div class="complaint-header">
+                <span class="badg {{ c.type }}">{{ c.type|upper }}</span>
+                <span class="complaint-date">{{ c.timestamp }}</span>
+            </div>
+            <div class="complaint-body">
+                <h4>{{ c.name }}</h4>
+                <p>{{ c.message }}</p>
+            </div>
+            {% if c.metadata %}
+            <details class="metadata-details">
+                <summary>View Metadata</summary>
+                <div class="metadata-content">
+                    <div class="meta-item"><strong>IP:</strong> <span>{{ c.metadata.ip }}</span></div>
+                    <div class="meta-item"><strong>OS/Browser:</strong> <span>{{ c.metadata.ua }}</span></div>
+                    <div class="meta-item"><strong>Lang:</strong> <span>{{ c.metadata.lang }}</span></div>
+                </div>
+            </details>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Organizeyourlife{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <nav class="global-nav">
+        <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}" title="Calendar">
+            <i class="ph ph-calendar-blank"></i>
+        </a>
+        <a href="/alarms" class="nav-item {% if request.path == '/alarms' %}active{% endif %}" title="Alarms">
+            <i class="ph ph-alarm"></i>
+        </a>
+        <a href="/shopping" class="nav-item {% if request.path == '/shopping' %}active{% endif %}"
+            title="Shopping List">
+            <i class="ph ph-shopping-bag"></i>
+        </a>
+        <a href="/budget" class="nav-item {% if request.path == '/budget' %}active{% endif %}" title="Budget Tracker">
+            <i class="ph ph-currency-dollar"></i>
+        </a>
+        <a href="/support" class="nav-item {% if request.path == '/support' %}active{% endif %}"
+            title="Customer Service">
+            <i class="ph ph-headset"></i>
+        </a>
+        <a href="/admin" class="nav-item {% if request.path == '/admin' or request.path == '/login' %}active{% endif %}"
+            title="Admin Console">
+            <i class="ph ph-lock-key"></i>
+        </a>
+    </nav>
+
+    <main class="app-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

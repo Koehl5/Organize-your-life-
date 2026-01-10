@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Service | Organizeyourlife{% endblock %}
+
+{% block content %}
+<div class="support-container">
+    <header class="page-header">
+        <h2>Customer Service</h2>
+        <p class="subtitle">We value your feedback. Submit your complaint below.</p>
+    </header>
+
+    <div class="support-content">
+        <form action="/support" method="POST" class="support-form">
+            <!-- Honey Pot hidden field for security -->
+            <input type="text" name="website_url" style="display:none !important" tabindex="-1" autocomplete="off">
+
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="name" placeholder="Your Name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Complaint Type</label>
+                <select name="type">
+                    <option value="bug">Report a Bug</option>
+                    <option value="feedback">General Feedback</option>
+                    <option value="feature">Feature Request</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="message" rows="5" placeholder="Please describe your issue..." required></textarea>
+            </div>
+
+            <button type="submit" class="save-btn">Submit Complaint</button>
+        </form>
+
+        {% if success %}
+        <div class="alert success">
+            <i class="ph ph-check-circle"></i> Complaint submitted successfully.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
