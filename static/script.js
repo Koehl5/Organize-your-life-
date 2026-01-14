@@ -317,6 +317,12 @@ function initAlarms() {
     const stopBtn = document.getElementById('stopAlarmBtn');
     if (stopBtn) stopBtn.addEventListener('click', stopAlarm);
 
+    const snoozeBtn = document.getElementById('snoozeAlarmBtn');
+    if (snoozeBtn) snoozeBtn.addEventListener('click', snoozeAlarm);
+
+    const syncBtn = document.getElementById('syncAlarmsBtn');
+    if (syncBtn) syncBtn.addEventListener('click', syncAlarmsWithCalendar);
+
     setInterval(checkAlarms, 1000);
 }
 
@@ -327,6 +333,62 @@ function updateClock() {
 
     if (clock) clock.innerText = now.toLocaleTimeString('en-US', { hour12: false });
     if (dateEl) dateEl.innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
+function snoozeAlarm() {
+    stopAlarm(); // Stop current sound
+
+    // Add 10 minutes to current time
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 10);
+    const snoozeTime = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+    alarms.push({
+        id: Date.now(),
+        time: snoozeTime,
+        label: 'Snooze',
+        sound: 'chime', // Default snooze sound
+        enabled: true
+    });
+    localStorage.setItem('alarms', JSON.stringify(alarms));
+    renderAlarms();
+    alert(`Alarm snoozed until ${snoozeTime}`);
+}
+
+function syncAlarmsWithCalendar() {
+    // Get today's date in M/D/YYYY format to match event storage
+    const now = new Date();
+    const todayStr = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
+
+    // Filter for today's timed events
+    const todayEvents = events.filter(e => e.date === todayStr && e.time);
+
+    if (todayEvents.length === 0) {
+        alert("No timed events found for today.");
+        return;
+    }
+
+    // Sort by time
+    todayEvents.sort((a, b) => a.time.localeCompare(b.time));
+    const firstEvent = todayEvents[0];
+
+    // Check if alarm already exists
+    const exists = alarms.some(a => a.time === firstEvent.time && a.label === firstEvent.title);
+    if (exists) {
+        alert(`Alarm already set for ${firstEvent.title} at ${firstEvent.time}`);
+        return;
+    }
+
+    alarms.push({
+        id: Date.now(),
+        time: firstEvent.time,
+        label: firstEvent.title,
+        sound: 'alert',
+        enabled: true
+    });
+    localStorage.setItem('alarms', JSON.stringify(alarms));
+    renderAlarms();
+    alert(`Synced: Alarm set for ${firstEvent.title} at ${firstEvent.time}`);
 }
 
 function addAlarm() {
@@ -400,6 +462,164 @@ function checkAlarms() {
     });
 }
 
+// --- Weather Station Logic ---
+function initWeatherStation() {
+    const loading = document.getElementById('weatherLoading');
+    const content = document.getElementById('weatherContent');
+    const errorEl = document.getElementById('weatherError');
+    const locationName = document.getElementById('locationName');
+
+    if (!loading || !content) return;
+
+    if (!navigator.geolocation) {
+        showWeatherError("Geolocation is not supported by this browser.");
+        return;
+    }
+
+    loading.classList.remove('hidden');
+    content.classList.add('hidden');
+    errorEl.classList.add('hidden');
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            locationName.innerText = `Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
+            fetchWeatherData(lat, lon);
+
+            // Log location to server
+            fetch('/api/log_location', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lat: lat, lon: lon })
+            }).catch(e => console.error("Error logging location:", e));
+        },
+        (error) => {
+            let msg = "Unable to retrieve your location.";
+            if (error.code === error.PERMISSION_DENIED) {
+                msg = "Location access denied. Please enable location services.";
+            }
+            showWeatherError(msg);
+        }
+    );
+}
+
+function showWeatherError(msg) {
+    const loading = document.getElementById('weatherLoading');
+    const errorEl = document.getElementById('weatherError');
+    const content = document.getElementById('weatherContent');
+
+    // Check if elements exist before accessing classList
+    if (loading) loading.classList.add('hidden');
+    if (content) content.classList.add('hidden');
+
+    if (errorEl) {
+        errorEl.classList.remove('hidden');
+        const p = errorEl.querySelector('p');
+        if (p) p.innerText = msg;
+    }
+}
+
+async function fetchWeatherData(lat, lon) {
+    // Open-Meteo API (Free, No Key)
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Weather API error');
+        const data = await response.json();
+        renderWeather(data);
+    } catch (e) {
+        console.error(e);
+        showWeatherError("Failed to fetch weather data.");
+    }
+}
+
+function renderWeather(data) {
+    const loading = document.getElementById('weatherLoading');
+    const content = document.getElementById('weatherContent');
+
+    if (loading) loading.classList.add('hidden');
+    if (content) content.classList.remove('hidden');
+
+    // Current
+    const current = data.current;
+
+    const tempEl = document.getElementById('currentTemp');
+    if (tempEl) tempEl.innerText = Math.round(current.temperature_2m);
+
+    const windSpeedEl = document.getElementById('windSpeed');
+    if (windSpeedEl) windSpeedEl.innerText = `${current.wind_speed_10m} mph`;
+
+    const windDirEl = document.getElementById('windDir');
+    if (windDirEl) windDirEl.innerText = `${current.wind_direction_10m}°`;
+
+    const elevationEl = document.getElementById('elevation');
+    if (elevationEl) elevationEl.innerText = `${Math.round(data.elevation)} m`;
+
+    // Condition
+    const code = current.weather_code;
+    const condition = getWeatherCondition(code);
+
+    const descEl = document.getElementById('weatherDesc');
+    if (descEl) descEl.innerText = condition.desc;
+
+    const iconEl = document.getElementById('weatherIcon');
+    if (iconEl) iconEl.className = `ph ${condition.icon}`;
+
+    // Forecast
+    const daily = data.daily;
+    const grid = document.getElementById('forecastGrid');
+    if (grid) {
+        grid.innerHTML = '';
+        // 5 days
+        for (let i = 0; i < 5; i++) {
+            const date = new Date(daily.time[i]);
+            // Add timezone offset to fix off-by-one day issue due to UTC
+            const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+            const adjustedDate = new Date(date.getTime() + userTimezoneOffset);
+
+            const dayName = adjustedDate.toLocaleDateString('en-US', { weekday: 'short' });
+
+            const dayCode = daily.weather_code[i];
+            const cond = getWeatherCondition(dayCode);
+            const maxTemp = Math.round(daily.temperature_2m_max[i]);
+            const minTemp = Math.round(daily.temperature_2m_min[i]);
+
+            const el = document.createElement('div');
+            el.className = 'forecast-day';
+            el.innerHTML = `
+                <span class="day-name">${dayName}</span>
+                <i class="day-icon ph ${cond.icon}"></i>
+                <span class="day-temp">${maxTemp}° / ${minTemp}°</span>
+            `;
+            grid.appendChild(el);
+        }
+    }
+}
+
+function getWeatherCondition(code) {
+    // WMO Weather interpretation codes (WW)
+    // 0: Clear sky
+    // 1, 2, 3: Mainly clear, partly cloudy, and overcast
+    // 45, 48: Fog
+    // 51, 53, 55: Drizzle
+    // 61, 63, 65: Rain
+    // 71, 73, 75: Snow fall
+    // 80, 81, 82: Rain showers
+    // 95, 96, 99: Thunderstorm
+
+    if (code === 0) return { desc: 'Clear Sky', icon: 'ph-sun' };
+    if (code >= 1 && code <= 3) return { desc: 'Cloudy', icon: 'ph-cloud' };
+    if (code === 45 || code === 48) return { desc: 'Foggy', icon: 'ph-cloud-fog' };
+    if (code >= 51 && code <= 55) return { desc: 'Drizzle', icon: 'ph-cloud-rain' };
+    if (code >= 61 && code <= 82) return { desc: 'Rain', icon: 'ph-cloud-rain' };
+    if (code >= 71 && code <= 77) return { desc: 'Snow', icon: 'ph-snowflake' };
+    if (code >= 95) return { desc: 'Thunderstorm', icon: 'ph-cloud-lightning' };
+
+    return { desc: 'Unknown', icon: 'ph-question' };
+}
+
 function triggerAlarm(alarm) {
     const modal = document.getElementById('alarmModal');
     const label = document.getElementById('triggerLabel');
@@ -409,6 +629,9 @@ function triggerAlarm(alarm) {
         label.innerText = alarm.label;
         time.innerText = alarm.time;
         modal.style.display = 'flex';
+
+        if (alarm.sound === 'silent') return;
+
         const audioEl = document.getElementById(`sound-${alarm.sound}`);
         if (audioEl) {
             audioEl.currentTime = 0;
@@ -500,7 +723,8 @@ function renderShoppingList() {
 function initBudget() {
     const form = document.getElementById('budgetForm');
     if (form) {
-        updateBudgetValues();
+        updateBudgetDisplay();
+        renderBudgetChart();
         renderTransactions();
         form.addEventListener('submit', addTransaction);
     }
@@ -520,7 +744,8 @@ function addTransaction(e) {
         localStorage.setItem('budget', JSON.stringify(transactions));
         descInput.value = '';
         amountInput.value = '';
-        updateBudgetValues();
+        updateBudgetDisplay();
+        renderBudgetChart();
         renderTransactions();
     }
 }
@@ -528,11 +753,75 @@ function addTransaction(e) {
 window.deleteTransaction = function (id) {
     transactions = transactions.filter(t => t.id !== id);
     localStorage.setItem('budget', JSON.stringify(transactions));
-    updateBudgetValues();
+    updateBudgetDisplay();
+    renderBudgetChart();
     renderTransactions();
 };
 
-function updateBudgetValues() {
+let budgetChartInstance = null;
+
+function renderBudgetChart() {
+    const ctx = document.getElementById('budgetChart');
+    if (!ctx) return;
+
+    // Calculate totals
+    let income = 0;
+    let expenses = 0;
+
+    transactions.forEach(t => {
+        if (t.type === 'income') income += t.amount;
+        if (t.type === 'expense') expenses += t.amount;
+    });
+
+    if (budgetChartInstance) {
+        budgetChartInstance.destroy();
+    }
+
+    budgetChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Income', 'Expenses'],
+            datasets: [{
+                data: [income, expenses],
+                backgroundColor: [
+                    '#00ff88', // Success/Income color
+                    '#ff0055'  // Danger/Expense color
+                ],
+                borderColor: [
+                    'rgba(0,0,0,0.1)',
+                    'rgba(0,0,0,0.1)'
+                ],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#a0a0b0',
+                        font: {
+                            family: 'Inter',
+                            size: 12
+                        },
+                        boxWidth: 10,
+                        padding: 15
+                    }
+                }
+            },
+            cutout: '70%',
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+}
+
+function updateBudgetDisplay() {
     const balanceEl = document.getElementById('totalBalance');
     const incomeEl = document.getElementById('totalIncome');
     const expenseEl = document.getElementById('totalExpense');
@@ -542,8 +831,8 @@ function updateBudgetValues() {
     const expense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0).toFixed(2);
 
     if (balanceEl) balanceEl.innerText = `$${total}`;
-    if (incomeEl) incomeEl.innerText = `+$${income}`;
-    if (expenseEl) expenseEl.innerText = `-$${expense}`;
+    if (incomeEl) incomeEl.innerText = `+ $${income}`;
+    if (expenseEl) expenseEl.innerText = `- $${expense}`;
 }
 
 function renderTransactions() {
@@ -560,30 +849,41 @@ function renderTransactions() {
 
     transactions.forEach(t => {
         const item = document.createElement('div');
-        item.classList.add('transaction-item', t.type);
+        item.classList.add('trans-item');
+        if (t.type === 'income') item.classList.add('income');
+        else item.classList.add('expense');
+
         item.innerHTML = `
-            <div class="trans-info"><span class="trans-desc">${t.desc}</span><span class="trans-date">${t.date}</span></div>
+            <div class="trans-info">
+                <span class="trans-desc">${t.desc}</span>
+                <span class="trans-date">${t.date}</span>
+            </div>
             <div class="trans-right">
-                <span class="trans-amount">${t.type === 'income' ? '+' : '-'}$${Math.abs(t.amount).toFixed(2)}</span>
-                <button class="delete-btn" onclick="deleteTransaction(${t.id})"><i class="ph ph-trash"></i></button>
+                <span class="trans-amount">${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}</span>
+                <button class="delete-trans" onclick="deleteTransaction(${t.id})">×</button>
             </div>
         `;
         list.appendChild(item);
     });
 }
 
-// Initialize based on page
-if (document.getElementById('calendarGrid')) {
-    initButtons();
+// --- Initialization ---
+document.addEventListener('DOMContentLoaded', () => {
     load();
-    renderSidebar();
-    initTodoList();
-} else if (document.getElementById('dayEventsList')) {
+    initButtons();
     initDayView();
-} else if (document.getElementById('digitalClock')) {
-    initAlarms();
-} else if (document.getElementById('shoppingInput')) {
-    initShoppingList();
-} else if (document.getElementById('totalBalance')) {
-    initBudget();
-}
+    initTodoList();
+
+    // Check which page we are on to init specific features
+    if (document.getElementById('alarmsList')) {
+        initAlarms();
+    } else if (document.getElementById('shoppingList')) {
+        initShoppingList();
+    } else if (document.getElementById('totalBalance')) {
+        initBudget();
+    } else if (document.getElementById('weatherCard')) {
+        initWeatherStation();
+    }
+
+    renderSidebar(); // Sidebar exists on all pages
+});

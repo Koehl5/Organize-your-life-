@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1768082826381,
+        "timestamp": "2026-01-10 17:07:06",
+        "lat": 41.3324114324209,
+        "lon": -75.95744697792983,
+        "ip": "127.0.0.1",
+        "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "id": 1768106611993,
+        "timestamp": "2026-01-10 23:43:31",
+        "lat": 41.33245954534325,
+        "lon": -75.95729624864452,
+        "ip": "127.0.0.1",
+        "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "id": 1768119232214,
+        "timestamp": "2026-01-11 03:13:52",
+        "lat": 41.33234463108969,
+        "lon": -75.9570915493592,
+        "ip": "127.0.0.1",
+        "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "id": 1768119484531,
+        "timestamp": "2026-01-11 03:18:04",
+        "lat": 41.33233086803266,
+        "lon": -75.95737381581331,
+        "ip": "127.0.0.1",
+        "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "id": 1768410640348,
+        "timestamp": "2026-01-14 12:10:40",
+        "lat": 41.33266696413384,
+        "lon": -75.95772678317483,
+        "ip": "127.0.0.1",
+        "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    }
+]

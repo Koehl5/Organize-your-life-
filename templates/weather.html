@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Weather Station - Organizeyourlife{% endblock %}
+
+{% block content %}
+<div class="weather-container fade-in">
+    <div class="header-section">
+        <h1>Weather Station</h1>
+        <p class="subtitle">Live updates from your local atmosphere</p>
+    </div>
+
+    <div id="weatherCard" class="weather-card">
+        <div class="weather-loading" id="weatherLoading">
+            <div class="spinner"></div>
+            <p>Locating satellite...</p>
+        </div>
+
+        <div class="weather-content hidden" id="weatherContent">
+            <div class="current-weather">
+                <div class="temp-display">
+                    <span id="currentTemp" class="temp-value">--</span>
+                    <span class="unit">°F</span>
+                </div>
+                <div class="condition-display">
+                    <i id="weatherIcon" class="ph ph-cloud-sun"></i>
+                    <span id="weatherDesc">Clear Sky</span>
+                </div>
+                <div class="location-display">
+                    <i class="ph ph-map-pin"></i>
+                    <span id="locationName">Detecting Location...</span>
+                </div>
+            </div>
+
+            <div class="weather-details">
+                <div class="detail-item">
+                    <i class="ph ph-wind"></i>
+                    <div>
+                        <span class="label">Wind</span>
+                        <span id="windSpeed" class="value">-- mph</span>
+                    </div>
+                </div>
+                <!-- Humidity not directly available in basic current_weather check of Open-Meteo without extra params, using wind/elevation instead or adding params -->
+                <div class="detail-item">
+                    <i class="ph ph-arrows-out-cardinal"></i>
+                    <div>
+                        <span class="label">Direction</span>
+                        <span id="windDir" class="value">--°</span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="ph ph-sun"></i>
+                    <div>
+                        <span class="label">Elevation</span>
+                        <span id="elevation" class="value">-- m</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="forecast-section">
+                <h3>5-Day Trend</h3>
+                <div class="forecast-grid" id="forecastGrid">
+                    <!-- populated by js -->
+                </div>
+            </div>
+        </div>
+
+        <div class="weather-error hidden" id="weatherError">
+            <i class="ph ph-warning-circle"></i>
+            <p>Unable to retrieve weather data.</p>
+            <button onclick="initWeatherStation()" class="retry-btn">Retry</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

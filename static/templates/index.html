@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clean Calendar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="calendar-container">
+        <header>
+            <h2 id="monthDisplay"></h2>
+            <div class="nav-btns">
+                <button id="prevBtn">←</button>
+                <button id="nextBtn">→</button>
+            </div>
+        </header>
+
+        <div class="weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+
+        <div id="calendarGrid" class="calendar-grid"></div>
+    </div>
+
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Event</h3>
+            <input type="text" id="eventInput" placeholder="Event Title...">
+            <div class="modal-actions">
+                <button id="closeModal">Cancel</button>
+                <button id="saveEvent">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

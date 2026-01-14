@@ -9,7 +9,48 @@ app.secret_key = os.environ.get('Koehl-Allen', 'dev_key_only_for_local_testing')
 
 # Ensure data directory exists
 DATA_FILE = os.path.join(os.path.dirname(__file__), 'data', 'complaints.json')
-os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
+
+LOCATION_FILE = os.path.join(os.path.dirname(__file__), 'data', 'locations.json')
+
+def load_locations():
+    if not os.path.exists(LOCATION_FILE):
+        return []
+    with open(LOCATION_FILE, 'r') as f:
+        try:
+            return json.load(f)
+        except:
+            return []
+
+def save_location(data):
+    locations = load_locations()
+    locations.append(data)
+    with open(LOCATION_FILE, 'w') as f:
+        json.dump(locations, f, indent=4)
+
+@app.route('/api/log_location', methods=['POST'])
+def log_location():
+    try:
+        data = request.json
+        lat = data.get('lat')
+        lon = data.get('lon')
+        
+        if lat is None or lon is None:
+            return {'status': 'error', 'message': 'Missing coordinates'}, 400
+            
+        record = {
+            'id': int(datetime.now().timestamp() * 1000),
+            'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'lat': lat,
+            'lon': lon,
+            'ip': request.remote_addr or 'Unknown',
+            'ua': request.headers.get('User-Agent', 'Unknown')
+        }
+        
+        save_location(record)
+        return {'status': 'success'}
+    except Exception as e:
+        print(f"Error logging location: {e}")
+        return {'status': 'error', 'message': str(e)}, 500
 
 # In-memory storage for active users
 # Format: {ip_address: timestamp}
@@ -63,6 +104,10 @@ def shopping():
 @app.route('/budget')
 def budget():
     return render_template('budget.html')
+
+@app.route('/weather')
+def weather():
+    return render_template('weather.html')
 
 @app.route('/support', methods=['GET', 'POST'])
 def support():
@@ -137,8 +182,10 @@ def admin():
     complaints.sort(key=lambda x: x['timestamp'], reverse=True)
     
     active_count = get_active_user_count()
+    locations = load_locations()
+    locations.sort(key=lambda x: x['timestamp'], reverse=True)
     
-    return render_template('admin.html', complaints=complaints, active_users=active_count)
+    return render_template('admin.html', complaints=complaints, active_users=active_count, locations=locations)
 
 
 if __name__ == '__main__':

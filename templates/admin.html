@@ -20,33 +20,77 @@
         </div>
     </div>
 
-    <div class="complaints-list">
-        {% if complaints|length == 0 %}
-        <p class="empty-msg">No complaints submitted yet.</p>
-        {% else %}
-        {% for c in complaints %}
-        <div class="complaint-card">
-            <div class="complaint-header">
-                <span class="badg {{ c.type }}">{{ c.type|upper }}</span>
-                <span class="complaint-date">{{ c.timestamp }}</span>
-            </div>
-            <div class="complaint-body">
-                <h4>{{ c.name }}</h4>
-                <p>{{ c.message }}</p>
-            </div>
-            {% if c.metadata %}
-            <details class="metadata-details">
-                <summary>View Metadata</summary>
-                <div class="metadata-content">
-                    <div class="meta-item"><strong>IP:</strong> <span>{{ c.metadata.ip }}</span></div>
-                    <div class="meta-item"><strong>OS/Browser:</strong> <span>{{ c.metadata.ua }}</span></div>
-                    <div class="meta-item"><strong>Lang:</strong> <span>{{ c.metadata.lang }}</span></div>
+    <div class="admin-grid">
+        <div class="section-column">
+            <h3>Location History</h3>
+            <div class="locations-list">
+                {% if locations|length == 0 %}
+                <p class="empty-msg">No locations logged yet.</p>
+                {% else %}
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Lat/Lon</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loc in locations %}
+                            <tr>
+                                <td>{{ loc.timestamp }}</td>
+                                <td>{{ loc.lat }}, {{ loc.lon }}</td>
+                                <td>
+                                    <details>
+                                        <summary>Info</summary>
+                                        <div class="meta-popup">
+                                            <p><strong>IP:</strong> {{ loc.ip }}</p>
+                                            <p><strong>UA:</strong> {{ loc.ua }}</p>
+                                            <a href="https://www.google.com/maps?q={{ loc.lat }},{{ loc.lon }}"
+                                                target="_blank">View on Map</a>
+                                        </div>
+                                    </details>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-            </details>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="section-column">
+            <h3>Complaints</h3>
+            {% if complaints|length == 0 %}
+            <p class="empty-msg">No complaints submitted yet.</p>
+            {% else %}
+            {% for c in complaints %}
+            <div class="complaint-card">
+                <div class="complaint-header">
+                    <span class="badg {{ c.type }}">{{ c.type|upper }}</span>
+                    <span class="complaint-date">{{ c.timestamp }}</span>
+                </div>
+                <div class="complaint-body">
+                    <h4>{{ c.name }}</h4>
+                    <p>{{ c.message }}</p>
+                </div>
+                {% if c.metadata %}
+                <details class="metadata-details">
+                    <summary>View Metadata</summary>
+                    <div class="metadata-content">
+                        <div class="meta-item"><strong>IP:</strong> <span>{{ c.metadata.ip }}</span></div>
+                        <div class="meta-item"><strong>OS/Browser:</strong> <span>{{ c.metadata.ua }}</span></div>
+                        <div class="meta-item"><strong>Lang:</strong> <span>{{ c.metadata.lang }}</span></div>
+                    </div>
+                </details>
+                {% endif %}
+            </div>
+            {% endfor %}
             {% endif %}
         </div>
-        {% endfor %}
-        {% endif %}
     </div>
+</div>
 </div>
 {% endblock %}

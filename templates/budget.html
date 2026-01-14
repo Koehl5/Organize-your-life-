@@ -9,17 +9,25 @@
     </header>
 
     <div class="budget-dashboard">
-        <div class="card balance-card">
-            <h3>Total Balance</h3>
-            <span id="totalBalance">$0.00</span>
-        </div>
-        <div class="card income-card">
-            <h3>Income</h3>
-            <span id="totalIncome">$0.00</span>
-        </div>
-        <div class="card expense-card">
-            <h3>Expenses</h3>
-            <span id="totalExpense">$0.00</span>
+        <div class="balance-card">
+            <h2>Total Balance</h2>
+            <div class="balance-amount" id="totalBalance">$0.00</div>
+
+            <div class="chart-container"
+                style="position: relative; height: 200px; width: 100%; display: flex; justify-content: center; margin-top: 20px;">
+                <canvas id="budgetChart"></canvas>
+            </div>
+
+            <div class="balance-breakdown">
+                <div class="card income-card">
+                    <h3>Income</h3>
+                    <span id="totalIncome">$0.00</span>
+                </div>
+                <div class="card expense-card">
+                    <h3>Expenses</h3>
+                    <span id="totalExpense">$0.00</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -49,9 +57,10 @@
         <section class="transactions-list-section">
             <h3>History</h3>
             <div id="transactionsList">
-                <p class="empty-msg">No transactions yet.</p>
+                <div class="transactions-list" id="transactionList">
+                    <!-- Transactions injected here -->
+                </div>
             </div>
-        </section>
-    </div>
-</div>
-{% endblock %}
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            {% endblock %}

@@ -11,7 +11,14 @@
 
     <div class="alarms-content">
         <div class="active-alarms">
-            <h3>Active Alarms</h3>
+            <div class="alarms-header-row"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>Active Alarms</h3>
+                <button id="syncAlarmsBtn" class="save-btn"
+                    style="padding: 6px 12px; font-size: 0.8rem; background: var(--secondary-gradient);">
+                    <i class="ph ph-arrows-clockwise"></i> Sync First Event
+                </button>
+            </div>
             <div id="alarmsList">
                 <p class="empty-msg">No alarms set.</p>
             </div>
@@ -33,6 +40,7 @@
                     <option value="beep">Digital Beep</option>
                     <option value="chime">Soft Chime</option>
                     <option value="alert">Alert Siren</option>
+                    <option value="silent">Silent (Popup Only)</option>
                 </select>
             </div>
             <button id="addAlarmBtn" class="save-btn">Set Alarm</button>
@@ -50,7 +58,12 @@
         <i class="ph ph-alarm" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px;"></i>
         <h3 id="triggerLabel">Alarm!</h3>
         <p id="triggerTime">00:00</p>
-        <button id="stopAlarmBtn" class="save-btn" style="background: var(--danger);">Stop</button>
+        <div class="modal-actions" style="margin-top: 20px;">
+            <button id="snoozeAlarmBtn" class="save-btn"
+                style="background: var(--glass-bg); border: 1px solid var(--glass-border); margin-right: 10px;">Snooze
+                10m</button>
+            <button id="stopAlarmBtn" class="save-btn" style="background: var(--danger);">Stop</button>
+        </div>
     </div>
 </div>
 {% endblock %}
